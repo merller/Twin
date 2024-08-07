@@ -19,7 +19,17 @@ The Twin is a platform for IoT programming which consists of three layers, the i
 
 * Python 3.12
 * Java 1.8
+* PyTorch 2.3.0
+* Cuda 12.1
+
 
 ### How to run
 
-* Quick run
+* Twin
+We provide a JAR package (Twin_interface.jar&Twin_execution.jar) 
+
+* Connection layer
+We specifically provide three demos for the connection layer, corresponding to the cluster module, the cluster determination module, and the code search module.
+1. cluster module
+
+
