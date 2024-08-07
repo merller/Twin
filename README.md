@@ -31,6 +31,7 @@ We provide a JAR package (Twin_interface.jar&Twin_execution.jar)
 
 * #### Connection layer
 We specifically provide three demos for the connection layer, corresponding to the cluster module, the cluster determination module, and the code search module.
-1. cluster module
+
+Go to the `demos` folder, download the data.json and the whole folder `Fine-tuned Model`. And then you can choose to donwload which one scipt or all scripts for demos of the above three modules. 
 
 
