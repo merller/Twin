@@ -10,6 +10,7 @@ This repository is dedicated to providing comprehensive instructions on a runnin
 
 
 The Twin is a platform for IoT programming which consists of three layers, the interface layer, the connection layer and the exeuction layer. 
+![overview](overview.pdf )
 
 ## Getting started
 
