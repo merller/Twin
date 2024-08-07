@@ -25,10 +25,10 @@ The Twin is a platform for IoT programming which consists of three layers, the i
 
 ### How to run
 
-* Twin
+* #### Twin
 We provide a JAR package (Twin_interface.jar&Twin_execution.jar) 
 
-* Connection layer
+* #### Connection layer
 We specifically provide three demos for the connection layer, corresponding to the cluster module, the cluster determination module, and the code search module.
 1. cluster module
 
