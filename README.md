@@ -32,6 +32,6 @@ We provide a JAR package (Twin.jar)
 * #### Connection layer
 We specifically provide three demos for the connection layer, corresponding to the cluster module, the cluster determination module, and the code search module.
 
-Go to the `demos` folder, download the data.json and the whole folder `Models`. And then you can choose to donwload which one scipt or all scripts for demos of the above three modules. 
+Go to the `demos` folder, download the whole folder `Models`. And then you can choose to donwload which one scipt or all scripts for demos of the above three modules. 
 
 
