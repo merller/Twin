@@ -210,27 +210,5 @@ with open(scene_cluster_file, 'r', encoding='utf-8') as f:
 
 # Iterate over top_1_classes_per_code and save objects to corresponding files
 for idx in top_1_classes_per_code:
-    file_name = top_1_classes_per_code[idx]
-    
-    # Get current object
-    current_object = scene_data[idx]
-    
-    # Build target file path
-    target_file_path = os.path.join(folder_path, file_name)
     print(file_name)
-    # If target file exists, read its content, otherwise initialize to empty list
-    if os.path.exists(target_file_path):
-        with open(target_file_path, 'r', encoding='utf-8') as f:
-            file_data = json.load(f)
-    else:
-        file_data = []
 
-    # Add current object to file data
-    file_data.append(current_object)
-
-    # Write updated file data back to target file
-    with open(target_file_path, 'w', encoding='utf-8') as f:
-        json.dump(file_data, f, ensure_ascii=False, indent=4)
-
-    # Print current operation info
-    # print(f"{file_name} 中添加了一个对象，当前文件内容为: {file_data}")
