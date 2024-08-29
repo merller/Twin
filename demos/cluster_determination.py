@@ -11,7 +11,7 @@ from collections import Counter
 class BertClassifier(nn.Module):
     def __init__(self, n_classes):
         super(BertClassifier, self).__init__()
-        self.bert = BertModel.from_pretrained('dataSet/bert-base-uncased/')
+        self.bert = BertModel.from_pretrained('bert-base-uncased')
         self.drop = nn.Dropout(p=0.3)
         self.fc = nn.Linear(self.bert.config.hidden_size, n_classes)
 
