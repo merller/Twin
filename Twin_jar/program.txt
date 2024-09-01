@@ -1,0 +1,55 @@
+    var light1;
+    var heater1;
+    var sensor1;
+    var alarm;
+    
+   function activateAlarm() {
+     @(iotEvent.activate_Alarm(alarm));
+   }
+
+
+    thread actionRoutine{
+        if(sensor1.state == "active") {
+            if (sensor1.temperature < 18) {
+                @(iotEvent.turn_on(heater1));
+            } 
+        }
+    }
+
+
+    thread actionRoutine{
+        if(sensor1.state == "active") {
+            if (time == "night") {
+                activateAlarm();
+            } 
+        }
+    }
+
+    semaphore sem1 = 1;
+    
+    thread actionRoutine{
+
+        acquire(sem1);
+        if (sensor1.state == "active") {
+            Δ(iotEvent.turn_on(light1),100);
+        } 
+        release(sem1);
+    }
+
+
+
+ 
+    mutex heater_lock;
+    
+    thread actionRoutine{
+        acquire(heater_lock);
+        if (sensor1.temperature > 22) {
+            @(iotEvent.turn_off(heater1));
+        } 
+        release(heater_lock);
+    }
+
+
+
+
+

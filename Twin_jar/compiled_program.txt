@@ -1,0 +1,25 @@
+let light1;
+let heater1;
+let sensor1;
+let alarm;
+function activateAlarm  () 
+{
+runtime.eventFetch("alarm", "activate_Alarm");
+}
+ 
+async function thread1() { runtime.addListener("sensor1.state", (state) -> sensor1.state == "active", () -> { runtime.addListener("sensor1.temperature", (temperature) -> sensor1.temperature < 18, () -> { runtime.eventFetch("heater1", "turn_on");});});
+} thread1();
+
+async function thread2() { runtime.addListener("sensor1.state", (state) -> sensor1.state == "active", () -> { runtime.addListener("time", (time) -> time == "night", () -> {   activateAlarm ();});});
+} thread2();
+
+runtime.semaphores.set("sem1", 1);
+async function thread3() { await runtime.acquireSemaphore("sem1");
+runtime.addListener("sensor1.state", (state) -> sensor1.state == "active", () -> { runtime.addListener("TimeDelay", (event) -> { setTimeout(() -> { runtime.eventFetch("light1", "turn_on"); }, 100); });});
+runtime.releaseSemaphore("sem1");
+} thread3();
+
+async function thread4() { await runtime.acquireSemaphore("heater_lock");
+runtime.addListener("sensor1.temperature", (temperature) -> sensor1.temperature > 22, () -> { runtime.eventFetch("heater1", "turn_off");});
+runtime.releaseSemaphore("heater_lock");
+} thread4();
