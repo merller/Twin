@@ -11,7 +11,7 @@ from collections import Counter
 class BertClassifier(nn.Module):
     def __init__(self, n_classes):
         super(BertClassifier, self).__init__()
-        self.bert = BertModel.from_pretrained('bert-base-uncased')
+        self.bert = BertModel.from_pretrained('/bert-base-uncased/')
         self.drop = nn.Dropout(p=0.3)
         self.fc = nn.Linear(self.bert.config.hidden_size, n_classes)
 
@@ -50,7 +50,7 @@ def predict_scene(description, model, tokenizer, label_encoder, device):
     with torch.no_grad():
         outputs = model(input_ids=input_ids, attention_mask=attention_mask)
     probabilities = torch.softmax(outputs, dim=1).cpu().numpy()
-    top_3_indices = probabilities.argsort()[0, -3:][::-1]
+    top_3_indices = probabilities.argsort()[0, -1:][::-1]
     return label_encoder.inverse_transform(top_3_indices)
 
 def load_model(model_path, n_classes, device):
@@ -61,25 +61,39 @@ def load_model(model_path, n_classes, device):
     return model
 
 def classPredict(description):
-    json_file_path = 'dataSet/scene/Scene_test.json'
-    with open(json_file_path, 'r', encoding='UTF-8') as file:
-        data = json.load(file)
-        data = data[:]
-
-    all_labels = [item['class'] for item in data]
+    all_labels = [
+        "garden", "kitchen", "factory", "hotel", "room", "office", "patient", 
+        "security", "store", "sports", "home entertainment", "pet", "library", 
+        "warehouse", "museum", "traffic", "school", "coffee"
+    ]
 
     n_classes = len(set(all_labels))
 
-    tokenizer = BertTokenizer.from_pretrained('dataSet/bert-base-uncased/')
+    tokenizer = BertTokenizer.from_pretrained('/bert-base-uncased/')
     label_encoder = LabelEncoder()
     label_encoder.fit(all_labels)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # load model
-    model_save_path = 'dataSet/Fine-Tune-BERTFC/fine_tuned_bert_model.pth'
+    model_save_path = 'FCmodel.pth'
     model = load_model(model_save_path, n_classes, device)
 
     predicted_scenes = predict_scene(description, model, tokenizer, label_encoder, device)
     return predicted_scenes
+def main():
+    # Input description
+    description = (
+        "When in the gardenRoutine, the system starts watering the garden, sets the watering schedule to 06:00, and adjusts the water flow based on soil moisture and weather forecast. If the forecast is 'rain', sets water flow to level 1; if soil moisture is below 30, sets water flow to level 5; otherwise, sets water flow to level 3. When in the eveningGardenRoutine, the system stops watering and sets water flow to level 2."
+    )
+
+    # Predict scene categories
+    predicted_classes = classPredict(description)
+
+    # Print predicted classes
+    print("Predicted Classes:", predicted_classes)
+
+
+if __name__ == "__main__":
+    main()
 
