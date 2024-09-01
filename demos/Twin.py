@@ -1,20 +1,20 @@
 import json
 import torch
-from search_class import classPredict
-from search_codeLLM import code_search
+from cluster_determination import classPredict
 from transformers import RobertaTokenizer, RobertaModel, T5ForConditionalGeneration, T5EncoderModel
 
-query = ""
+#garden
+query = "When in the gardenRoutine, the system starts watering the garden, sets the watering schedule to 06:00, and adjusts the water flow based on soil moisture and weather forecast. If the forecast is 'rain', sets water flow to level 1; if soil moisture is below 30, sets water flow to level 5; otherwise, sets water flow to level 3. When in the eveningGardenRoutine, the system stops watering and sets water flow to level 2."
 
 def Twin():
     description = query
     predicted_classes = classPredict(description)
-    search_files = [f"dataSet/scene/cluster/{predicted_class}.json" for predicted_class in predicted_classes]
-    code = code_search(search_files, description)
+    search_files = [f"dataSet/cluster/{predicted_class}.json" for predicted_class in predicted_classes]
+
 
     # Load the corresponding model and tokenizer
-    tokenizer = RobertaTokenizer.from_pretrained("dataSet/fine_tuned_codet5")
-    encoder_model = T5EncoderModel.from_pretrained("dataSet/fine_tuned_codet5") # local_codet5_base, fine_tuned_codet5
+    tokenizer = RobertaTokenizer.from_pretrained("fine_tuned_codet5")
+    encoder_model = T5EncoderModel.from_pretrained("fine_tuned_codet5") # local_codet5_base, fine_tuned_codet5
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     encoder_model.to(device)
 
@@ -45,3 +45,10 @@ def Twin():
     top_K_similarities = similarities[:1]  # K
     for sim, code, docstring in top_K_similarities:
         print(f"{code}")
+
+def main():
+    Twin()
+
+
+if __name__ == "__main__":
+    main()
