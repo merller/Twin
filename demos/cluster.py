@@ -13,7 +13,7 @@ def load_model_and_tokenizer(model_name):
     return tokenizer, model
 
 # Initialize model and tokenizer
-model_name = "dataSet/local_codet5_base"  
+model_name = "fine_tuned_codet5"  
 tokenizer, model = load_model_and_tokenizer(model_name)
 
 class FunctionCallGraph:
@@ -117,12 +117,12 @@ def encode(code):
 
     # Load the saved Query, Key, and Value matrices
     weight_file='models/attention/attention.pth'
-    saved_weights = torch.load(weight_file)
-    query_matrix = saved_weights['query_matrix']
-    key_matrix = saved_weights['key_matrix']
-    value_matrix = saved_weights['value_matrix']
+    saved_weights = torch.load(weight_file, map_location='cuda')
+    query_matrix = saved_weights['query_matrix'].to('cuda')
+    key_matrix = saved_weights['key_matrix'].to('cuda')
+    value_matrix = saved_weights['value_matrix'].to('cuda')
     
-    encodings = torch.stack([word_embed, ast_embed, icfg_embed], dim=0)
+    encodings = torch.stack([word_embed, ast_embed, icfg_embed], dim=0).to('cuda')
 
     # Compute the Query, Key, and Value outputs
     query_result = torch.matmul(encodings, query_matrix.T)  
@@ -130,7 +130,7 @@ def encode(code):
     value_result = torch.matmul(encodings, value_matrix.T)  
 
     # Compute the attention scores (Query @ Key.T)
-    attention_scores = torch.matmul(query_result, key_result.transpose(-2, -1)) / torch.sqrt(torch.tensor(query_result.size(-1), dtype=torch.float))
+    attention_scores = torch.matmul(query_result, key_result.transpose(-2, -1)) / torch.sqrt(torch.tensor(query_result.size(-1), dtype=torch.float).to('cuda'))
 
     # Apply softmax to normalize the attention scores and get attention weights
     attention_weights = torch.softmax(attention_scores, dim=-1)
@@ -177,16 +177,28 @@ def compute_class_average_encodings(folder_path):
             data = read_json(file_path)
             code_list = extract_code(data)
             encodings = [encode(code) for code in code_list]
-            avg_encoding = torch.stack(encodings).mean(dim=0)
+            avg_encoding = torch.stack(encodings).mean(dim=0).to('cuda')
             class_avg_encodings.append((filename, avg_encoding))
     return class_avg_encodings
 
 # Calculate similarity and return top 1 class
 def get_top_1_similar_classes(class_avg_encodings, code_embedding):
-    similarities = [(filename, cosine_similarity(code_embedding.cpu().unsqueeze(0), class_encoding.cpu().unsqueeze(0)).item()) 
-                    for filename, class_encoding in class_avg_encodings]
+    # Ensure code_embedding is 2D by adding an extra dimension if necessary
+    code_embedding_2d = code_embedding.view(1, -1).cpu().numpy()  # Convert to 2D and move to CPU as numpy array
+
+    similarities = []
+    for filename, class_encoding in class_avg_encodings:
+        # Ensure class_encoding is also 2D
+        class_encoding_2d = class_encoding.view(1, -1).cpu().numpy()  # Convert to 2D and move to CPU as numpy array
+
+        # Compute cosine similarity
+        similarity = cosine_similarity(code_embedding_2d, class_encoding_2d).item()
+        similarities.append((filename, similarity))
+    
+    # Sort by similarity
     similarities.sort(key=lambda x: x[1], reverse=True)
     return similarities[:1]
+
 
 # Main function
 def main(folder_path, scene_cluster_file):
@@ -202,13 +214,13 @@ def main(folder_path, scene_cluster_file):
     return top_1_classes_per_code
 
 # Usage example
-folder_path = 'dataSet/scene/cluster'
-scene_cluster_file = 'dataSet/scene/Scene_clusterMetric.json'
+folder_path = 'dataSet-demo/cluster'
+scene_cluster_file = 'dataSet-demo/Scene_clusterMetric.json'
 top_1_classes_per_code = main(folder_path, scene_cluster_file)
 with open(scene_cluster_file, 'r', encoding='utf-8') as f:
     scene_data = json.load(f)
 
 # Iterate over top_1_classes_per_code and save objects to corresponding files
 for idx in top_1_classes_per_code:
+    file_name = top_1_classes_per_code[idx]
     print(file_name)
-
