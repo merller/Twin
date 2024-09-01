@@ -9,7 +9,7 @@ query = "When in the gardenRoutine, the system starts watering the garden, sets 
 def Twin():
     description = query
     predicted_classes = classPredict(description)
-    search_files = [f"dataSet/cluster/{predicted_class}.json" for predicted_class in predicted_classes]
+    search_files = [f"dataSet-demo/cluster/{predicted_class}.json" for predicted_class in predicted_classes]
 
 
     # Load the corresponding model and tokenizer
