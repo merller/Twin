@@ -28,12 +28,12 @@ The Twin is a platform for IoT programming which consists of three layers, the i
 
 1. We provide a JAR package (Twin.jar) for compile scenario program. It can be exeucted using the following instruction:
 
-```java -jar Twin.jar --programFilePath```
+   ```java -jar Twin.jar --programFilePath```
 
-For example: ```java -jar Twin.jar Twin_jar/program.txt ``` 
+   For example: ```java -jar Twin.jar Twin_jar/program.txt ``` 
 
 2. We specifically provide three demos for the connection layer, corresponding to the cluster module, the cluster determination module, and the code search module.
 
-Go to the `demos` folder, download the folders `Models` and `dataSet-demo`. And then you can choose to donwload which one scipt or all scripts for demos of the above three modules. 
+   Go to the `demos` folder, download the folders `Models` and `dataSet-demo`. And then you can choose to donwload which one scipt or all scripts for demos of the above three modules. 
 
 
